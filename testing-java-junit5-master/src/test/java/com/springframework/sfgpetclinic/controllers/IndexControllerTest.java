@@ -1,5 +1,7 @@
 package com.springframework.sfgpetclinic.controllers;
 
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Duration;
@@ -31,7 +33,9 @@ class IndexControllerTest {
 		assertEquals("index", controller.index());
 		assertEquals("index", controller.index(), "Wrong view returned");
 		assertEquals("index", controller.index(), () -> "Another expensive message, displayed only in case of failure");
-	}
+	
+		assertThat(controller.index()).isEqualTo("index");
+		}
 
 	@DisplayName("Test exception")
 	@Test

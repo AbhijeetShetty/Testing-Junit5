@@ -20,7 +20,7 @@ class IndexControllerTest {
 		assertEquals("index", controller.index(), "Wrong view returned");
 		assertEquals("index", controller.index(), () -> "Another expensive message, displayed only in case of failure");
 	}
-
+ 
 	@Test
 	void testOupsHandler() {
 		assertTrue("notimplemented".equals(controller.oupsHandler()),

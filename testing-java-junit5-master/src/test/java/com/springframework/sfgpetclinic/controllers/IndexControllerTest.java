@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.springframework.sfgpetclinic.exceptions.ValueNotFoundException;
+
 class IndexControllerTest {
 
 	IndexController controller;
@@ -22,12 +24,12 @@ class IndexControllerTest {
 		assertEquals("index", controller.index(), "Wrong view returned");
 		assertEquals("index", controller.index(), () -> "Another expensive message, displayed only in case of failure");
 	}
- 
+
 	@DisplayName("Test exception")
 	@Test
 	void testOupsHandler() {
-		assertTrue("notimplemented".equals(controller.oupsHandler()),
-				() -> "This is a expensive message to build a test");
+		assertThrows(ValueNotFoundException.class, 
+				() -> controller.oopsHandler());
 	}
 
 }

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import com.springframework.sfgpetclinic.ControllerTest;
 import com.springframework.sfgpetclinic.fauxspring.Model;
 import com.springframework.sfgpetclinic.fauxspring.ModelMapImpl;
 import com.springframework.sfgpetclinic.model.Vet;
@@ -17,8 +18,8 @@ import com.springframework.sfgpetclinic.services.VetService;
 import com.springframework.sfgpetclinic.services.map.SpecialityMapService;
 import com.springframework.sfgpetclinic.services.map.VetMapService;
 
-@Tag("controller")
-class VetControllerTest {
+
+class VetControllerTest implements ControllerTest{
 
 	VetService vetService;
 	SpecialtyService specialtyService;

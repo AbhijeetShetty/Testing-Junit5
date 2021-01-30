@@ -5,8 +5,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-@Tag("model")
-class PersonTest {
+import com.springframework.sfgpetclinic.ModelTest;
+
+
+class PersonTest implements ModelTest{
   
 	@Test
 	void groupedAssertions() {

@@ -17,10 +17,12 @@ import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.condition.OS;
 
+import com.springframework.sfgpetclinic.ControllerTest;
+import com.springframework.sfgpetclinic.ModelTest;
 import com.springframework.sfgpetclinic.exceptions.ValueNotFoundException;
 
-@Tag("controller")
-class IndexControllerTest {
+
+class IndexControllerTest implements ControllerTest{
 
 	IndexController controller;
 

@@ -1,12 +1,14 @@
 package com.springframework.sfgpetclinic.services.springdatajpa;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.atMost;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -65,33 +67,33 @@ class SpecialitySDJpaServiceTest {
 
 	@Test
 	void testDeleteByObjectBdd() {
-		//given
+		// given
 		Speciality speciality = new Speciality();
-		//when
+		// when
 		service.delete(speciality);
-		//then
+		// then
 		then(specialtyRepository).should().delete(any(Speciality.class));
 	}
+
 	@Test
 	void deleteById() {
 		service.deleteById(1l);
 		service.deleteById(1l);
 		verify(specialtyRepository, times(2)).deleteById(1l);
 	}
-	
+
 	@Test
 	void deleteByIdBdd() {
-		//given -none
+		// given -none
 
-		//when
+		// when
 		service.deleteById(1l);
 		service.deleteById(1l);
 
-		//then
+		// then
 		then(specialtyRepository).should(times(2)).deleteById(1L);
 	}
 
-	
 	@Test
 	void deleteByIdAtLeast() {
 		service.deleteById(1l);
@@ -99,15 +101,15 @@ class SpecialitySDJpaServiceTest {
 
 		verify(specialtyRepository, atLeastOnce()).deleteById(1l);
 	}
-	
+
 	@Test
 	void deleteByIdAtLeastBdd() {
-		//given -none
+		// given -none
 
-		//when
+		// when
 		service.deleteById(1l);
 		service.deleteById(1l);
-		//then
+		// then
 		then(specialtyRepository).should(atLeastOnce()).deleteById(1l);
 	}
 
@@ -119,35 +121,35 @@ class SpecialitySDJpaServiceTest {
 		verify(specialtyRepository, atMost(5)).deleteById(1l);
 	}
 
-	
 	@Test
 	void deleteByIdAtMostBdd() {
-		//given - none
-		
-		//when
+		// given - none
+
+		// when
 		service.deleteById(1l);
 		service.deleteById(1l);
-		
-		//then
+
+		// then
 		then(specialtyRepository).should(atMost(5)).deleteById(1l);
 	}
+
 	@Test
 	void deleteByIdNever() {
 		service.deleteById(1l);
 		service.deleteById(1l);
-		verify(specialtyRepository,atLeastOnce()).deleteById(1l);
-		verify(specialtyRepository,never()).deleteById(5L);
+		verify(specialtyRepository, atLeastOnce()).deleteById(1l);
+		verify(specialtyRepository, never()).deleteById(5L);
 	}
-	
+
 	@Test
 	void deleteByIdNeverBdd() {
-		//given - none
-		
-		//when
+		// given - none
+
+		// when
 		service.deleteById(1l);
 		service.deleteById(1l);
-		
-		//then
+
+		// then
 		then(specialtyRepository).should(atLeastOnce()).deleteById(1l);
 		then(specialtyRepository).should(never()).deleteById(5L);
 	}
@@ -156,15 +158,40 @@ class SpecialitySDJpaServiceTest {
 	void testDelete() {
 		service.delete(new Speciality());
 	}
-	
+
 	@Test
 	void testDeleteBdd() {
-		//given - none
-		
-		//when
+		// given - none
+
+		// when
 		service.delete(new Speciality());
-		
-		//then
+
+		// then
 		then(specialtyRepository).should().delete(any());
 	}
+
+	@Test
+	void testDoThrow() {
+		doThrow(new RuntimeException("Run time exception")).when(specialtyRepository).delete(any());
+		assertThrows(RuntimeException.class, ()->specialtyRepository.delete(new Speciality()));
+		verify(specialtyRepository).delete(any());
+	}
+	
+	@Test
+	void testFindByIdThrows(){
+		given(specialtyRepository.findById(1L)).willThrow(new RuntimeException("boom"));
+
+        assertThrows(RuntimeException.class, () -> service.findById(1L));
+
+        then(specialtyRepository).should().findById(1L);
+	}
+	
+	  @Test
+	    void testDeleteBDD() {
+	        willThrow(new RuntimeException("boom")).given(specialtyRepository).delete(any());
+
+	        assertThrows(RuntimeException.class, () -> specialtyRepository.delete(new Speciality()));
+
+	        then(specialtyRepository).should().delete(any());
+	    }
 }

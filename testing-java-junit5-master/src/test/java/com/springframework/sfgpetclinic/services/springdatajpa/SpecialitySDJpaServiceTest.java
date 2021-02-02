@@ -1,26 +1,18 @@
 package com.springframework.sfgpetclinic.services.springdatajpa;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.atMost;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Optional;
-
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.*;
 
 import com.springframework.sfgpetclinic.model.Speciality;
 import com.springframework.sfgpetclinic.repositories.SpecialtyRepository;
@@ -173,25 +165,68 @@ class SpecialitySDJpaServiceTest {
 	@Test
 	void testDoThrow() {
 		doThrow(new RuntimeException("Run time exception")).when(specialtyRepository).delete(any());
-		assertThrows(RuntimeException.class, ()->specialtyRepository.delete(new Speciality()));
+		assertThrows(RuntimeException.class, () -> specialtyRepository.delete(new Speciality()));
 		verify(specialtyRepository).delete(any());
 	}
-	
+
 	@Test
-	void testFindByIdThrows(){
+	void testFindByIdThrows() {
 		given(specialtyRepository.findById(1L)).willThrow(new RuntimeException("boom"));
 
-        assertThrows(RuntimeException.class, () -> service.findById(1L));
+		assertThrows(RuntimeException.class, () -> service.findById(1L));
 
-        then(specialtyRepository).should().findById(1L);
+		then(specialtyRepository).should().findById(1L);
 	}
-	
-	  @Test
-	    void testDeleteBDD() {
-	        willThrow(new RuntimeException("boom")).given(specialtyRepository).delete(any());
 
-	        assertThrows(RuntimeException.class, () -> specialtyRepository.delete(new Speciality()));
+	@Test
+	void testDeleteBDD() {
+		willThrow(new RuntimeException("boom")).given(specialtyRepository).delete(any());
 
-	        then(specialtyRepository).should().delete(any());
-	    }
+		assertThrows(RuntimeException.class, () -> specialtyRepository.delete(new Speciality()));
+
+		then(specialtyRepository).should().delete(any());
+	}
+
+	@Test
+	void testSaveLambda() {
+		// given
+		final String MATCH_ME = "MATCH_ME";
+		Speciality speciality = new Speciality();
+		speciality.setDescription(MATCH_ME);
+
+		Speciality savedSpecialty = new Speciality();
+		savedSpecialty.setId(1L);
+
+		// need mock to only return on match MATCH_ME string
+		given(specialtyRepository.save(argThat(argument -> argument.getDescription().equals(MATCH_ME))))
+				.willReturn(savedSpecialty);
+
+		// when
+		Speciality returnedSpecialty = service.save(speciality);
+
+		// then
+		assertThat(returnedSpecialty.getId()).isEqualTo(1L);
+	}
+
+	@Disabled
+	@Test
+	void testSaveLambdaNoMatch() {
+		// given
+		final String MATCH_ME = "MATCH_ME";
+		Speciality speciality = new Speciality();
+		speciality.setDescription("Not a match");
+
+		Speciality savedSpecialty = new Speciality();
+		savedSpecialty.setId(1L);
+
+		// need mock to only return on match MATCH_ME string
+		given(specialtyRepository.save(argThat(argument -> argument.getDescription().equals(MATCH_ME))))
+				.willReturn(savedSpecialty);
+
+		// when
+		Speciality returnedSpecialty = service.save(speciality);
+
+		// then
+		assertNull(returnedSpecialty);
+	}
 }
